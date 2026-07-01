@@ -1,4 +1,7 @@
 
+using DocumentFormat.OpenXml.ExtendedProperties;
+using Hangfire;
+using Scalar.AspNetCore;
 namespace HANGFIRE
 {
     public class Program
@@ -7,6 +10,9 @@ namespace HANGFIRE
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            //hangfire settings
+            builder.Services.AddHangfire(h => h.UseSqlServerStorage("Server=(localdb)\\ProjectModels;Database=Hangfire;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False"));
+            builder.Services.AddHangfireServer();
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -19,7 +25,12 @@ namespace HANGFIRE
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.MapScalarApiReference();
             }
+            app.UseHangfireDashboard("/hangfire");
+            //onlyone working
+            //BackgroundJob.Enqueue<Manager>( task => task.Features.FirstOrDefault());
+            //BackgroundJob.Enqueue<Manager>(t => t.Equals());
 
             app.UseHttpsRedirection();
 
